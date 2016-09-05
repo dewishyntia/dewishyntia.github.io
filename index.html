@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>demo</title>
+</head>
+<body>
+<link rel="stylesheet" type="text/css" href="bootstrap.css">
+
+<link href="music/music.css" type="text/css" rel="stylesheet" >
+<!--音乐播放器 angularJS开发 还是放弃angular了-->
+<div class="m_player" id="divplayer" ng-controller="music" style="left: -470px; z-index:99999;">
+    <div class="m_player_dock" id="divsongframe">
+        <div class="music_info" id="divsonginfo">
+            <a target="contentFrame" class="album_pic">
+                <img src="music/cover_mine_130.jpg" alt="" ></a>
+            <div class="music_info_main">
+                <p class="music_name" title="音乐你的生活">
+                    <span></span>
+                    <a onClick="g_topPlayer.singleFm.open();" href="javascript:;" class="icon_radio">电台</a></p>
+                <p class="singer_name" title="霍建华"></p>
+                <p class="play_date" id="ptime"></p>
+                <p class="music_op" style="display:;">
+                    <strong class="btn_like" title="喜欢">
+                        <span>我喜欢</span></strong>
+                    <strong class="btn_share" title="分享">
+                        <span>分享</span></strong>
+                    <strong class="btn_kge">
+                        <span>唱这首歌</span>
+                        <span class="kge_QRcode">
+                            <em></em>
+                            <em>手机扫描二维码，唱这首歌</em>
+                            <i class="kge_QRcode_logo"></i>
+                            <i class="kge_QRcode_arrow"></i>
+                        </span>
+                    </strong>
+                </p>
+            </div>
+        </div>
+        <div class="bar_op">
+            <strong title="上一首( [ )" class="prev_bt shi-click" shi-click="require('music/main').player('prev');">
+                <span>上一首</span></strong>
+            <strong title="播放(P)" class="play_bt shi-click" id="btnplay" shi-click="require('music/main').play('',1);">
+                <span>播放</span></strong>
+            <strong title="下一首( ] )" class="next_bt shi-click" shi-click="require('music/main').player('next');">
+                <span>下一首</span></strong>
+            <strong title="列表循环" class="cycle_bt" id="btnPlayway">
+                <span>列表循环</span></strong>
+            <p class="volume" title="音量调节">
+                <span class="volume_icon" id="spanmute" title="点击设为静音(M)"></span>
+                <span class="volume_regulate" id="spanvolume">
+                    <span class="volume_bar" style="width:90%;" id="spanvolumebar"></span>
+                    <span class="volume_op" style="left:90%;" id="spanvolumeop"></span>
+                </span>
+            </p>
+        </div>
+        <!--播放模式-->
+        <p style="display: none;" class="playbar_cp_select" id="divselect">
+            <strong title="单曲循环" class="cycle_single_bt shi-click" shi-click="require('music/main').changeMusicMode('repeat',this);">
+                <span>单曲循环</span></strong>
+            <strong title="列表循环" class="cycle_bt shi-click" shi-click="require('music/main').changeMusicMode('list',this);">
+                <span>列表循环</span></strong>
+            <strong title="顺序播放" class="ordered_bt shi-click" shi-click="require('music/main').changeMusicMode('shuffle',this);">
+                <span>顺序播放</span></strong>
+            <strong title="随机播放" class="unordered_bt shi-click" shi-click="require('music/main').changeMusicMode('shuffle',this);">
+                <span>随机播放</span></strong>
+        </p>
+        <p class="player_bar">
+            <span class="player_bg_bar" id="spanplayer_bgbar"></span>
+            <span class="download_bar" id="downloadbar" style="width: 100%;"></span>
+            <span class="play_current_bar" style="width: 0px;" id="spanplaybar"></span>
+            <span class="progress_op" style="left: 0px;" id="spanprogress_op"></span>
+        </p>
+        <div class="time_show" style="left:240px;bottom:8px;display:none;">
+            <p id="time_show"></p>
+            <span class="icon_arrow_foot">
+                <i class="foot_border"></i>
+                <i class="foot_arrow"></i>
+            </span>
+        </div>
+    </div>
+    <span style="display: block;" title="展开播放列表" class="open_list" id="spansongnum1">
+        <span id="music_list_num">0</span></span>
+    <span title="显示歌词(L)" class="btn_lyrics_disabled" id="btnlrc">歌词(L)</span>
+    <button type="button" class="folded_bt" title="点击收起" id="btnfold" style="background-position: -46px -10px;">
+        <span>点击收起/展开</span></button>
+    <!--play list-->
+    <div class="play_list_frame" id="divplayframe" style="display:none ;">
+        <div class="play_list_title">
+            <ul id="tab_container" style="width:270px;">
+                <li id="playlist_tab" class="current">
+                    <a href="javascript:;" style="color:#ffffff; font-size:14px; text-decoration:none;">音乐列表</a>
+                    <i>
+                    </i>
+                </li>
+            </ul>
+            <span id="clear_list" class="clear_list">清空列表</span>
+            <strong title="收起播放列表" class="close_list" id="btnclose"></strong>
+        </div>
+        <div class="play_list" id="divlistmain">
+            <div class="play_list_point" id="divnulllist" style="display:none;">
+                <div>
+                    <h4>您当前列表没有任何歌曲</h4>
+                    <p>您可以：</p>
+                    <p>在
+                        <a>首页</a>选择试听我们推荐的歌曲。</p>
+                    <p>在
+                        <a>乐库</a>中查找您想听的歌曲。</p>
+                </div>
+            </div>
+            <div class="play_list_main" id="divplaylist">
+                <!-- 播放列表_S-->
+                <div class="single_list" id="divsonglist">
+                    <ul>
+                    	<script id="music_list_tmpl" type="text/x-dot-template">
+							 {{? it && it.length > 0}}
+								 {{~ it :v:i}}
+									<li id="m_list_{{=v.id}}" style="position:relative" mid="{{=v.id}}">
+										<strong class="music_name" title="{{=v.musicName}}">
+											{{=v.musicName}} ({{=v.musicAlbum}})</strong>
+										<strong class="singer_name" title="{{=v.artist}}">{{=v.artist}}</strong>
+										<strong class="play_time">{{=v.musicTime}}</strong>
+										<div class="list_cp" style="position:absolute; z-index:9999; background:#000;right:12px;top:3px;">
+											<span style="display:none" class="data">{{=v.data}}</span>
+											<strong id="bt_like" class="btn_like" title="喜欢"><span>我喜欢</span></strong>
+											<strong class="btn_share" title="分享"><span>分享</span></strong>
+										</div>
+									</li>
+								 {{~}}
+							 {{?}}
+						 </script>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--歌词内容-->
+    <div class="y_player_lyrics" id="player_lyrics_pannel" style="display:none;">
+        <div class="lyrics_text" id="qrc_ctn"></div>
+        <div class="lyrics_bg"></div>
+        <span class="close_lyrics" id="closelrcpannel"></span>
+    </div>
+    <div class="single_radio_tip" id="single_radio_tip" style="display:none;">
+        <a href="javascript:;" class="close_tips"></a>
+    </div>
+</div>
+<audio id="audio" />
+<script src="sea.js"></script>
+<script>
+	define('const',function(a, b, c) {
+		c.exports = {
+			url : '{#$conf.web_url#}',
+			$win: $(window),
+			$body: $('body'),
+			$doc: $(document),
+			$html: $('html,body'),
+			delay : 300
+		}
+	})
+	seajs.use('music/main');
+</script>
+</body>
+</html>
